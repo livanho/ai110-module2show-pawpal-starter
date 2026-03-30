@@ -2,6 +2,97 @@
 
 ## 1. System Design
 
+### Core user actions
+
+1. Add a pet profile.
+2. Add a care task for a pet.
+3. Generate and view today's plan.
+
+### Main objects, attributes, and methods
+
+#### Owner
+
+- Attributes: `name`, `daily_time_available`, `preferences`
+- Methods: `add_pet(pet)`, `add_task(task)`, `request_daily_plan(date)`
+
+#### Pet
+
+- Attributes: `name`, `species`, `age`, `notes`
+- Methods: `get_tasks()`, `update_notes(notes)`
+
+#### CareTask
+
+- Attributes: `title`, `duration_minutes`, `priority`, `task_type`, `is_required`
+- Methods: `is_due_today(date)`, `estimate_score(preferences)`
+
+#### DailyPlan
+
+- Attributes: `date`, `scheduled_items`, `total_minutes`, `explanations`
+- Methods: `add_item(task, time_slot)`, `summarize()`, `get_todays_tasks()`
+
+#### Scheduler
+
+- Attributes: `strategy_name`
+- Methods: `build_plan(owner, pets, tasks, date)`, `explain_choice(task)`
+
+### Mermaid class diagram
+
+```mermaid
+classDiagram
+	class Owner {
+		+String name
+		+int daily_time_available
+		+String preferences
+		+add_pet(pet)
+		+add_task(task)
+		+request_daily_plan(date)
+	}
+
+	class Pet {
+		+String name
+		+String species
+		+int age
+		+String notes
+		+get_tasks()
+		+update_notes(notes)
+	}
+
+	class CareTask {
+		+String title
+		+int duration_minutes
+		+String priority
+		+String task_type
+		+bool is_required
+		+is_due_today(date) bool
+		+estimate_score(preferences) int
+	}
+
+	class DailyPlan {
+		+String date
+		+List scheduled_items
+		+int total_minutes
+		+List explanations
+		+add_item(task, time_slot)
+		+summarize() String
+		+get_todays_tasks() List
+	}
+
+	class Scheduler {
+		+String strategy_name
+		+build_plan(owner, pets, tasks, date) DailyPlan
+		+explain_choice(task) String
+	}
+
+	Owner "1" o-- "0..*" Pet : owns
+	Pet "1" o-- "0..*" CareTask : needs
+	Owner "1" o-- "0..*" CareTask : manages
+	Scheduler ..> Owner : uses
+	Scheduler ..> Pet : uses
+	Scheduler ..> CareTask : ranks
+	Scheduler --> DailyPlan : creates
+	DailyPlan "1" o-- "0..*" CareTask : schedules
+```
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
