@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Any
 
 
 @dataclass
@@ -12,6 +11,7 @@ class CareTask:
 	priority: str
 	task_type: str
 	is_required: bool
+	pet: Pet | None = None
 
 	def is_due_today(self, for_date: date) -> bool:
 		pass
@@ -37,8 +37,8 @@ class Pet:
 
 @dataclass
 class DailyPlan:
-	date: str
-	scheduled_items: list[dict[str, Any]] = field(default_factory=list)
+	date: date
+	scheduled_items: list[ScheduledItem] = field(default_factory=list)
 	total_minutes: int = 0
 	explanations: list[str] = field(default_factory=list)
 
@@ -50,6 +50,12 @@ class DailyPlan:
 
 	def get_todays_tasks(self) -> list[CareTask]:
 		pass
+
+
+@dataclass
+class ScheduledItem:
+	task: CareTask
+	time_slot: str
 
 
 class Owner:
@@ -64,14 +70,15 @@ class Owner:
 		self.preferences = preferences
 		self.pets: list[Pet] = []
 		self.tasks: list[CareTask] = []
+		self.scheduler: Scheduler | None = None
 
 	def add_pet(self, pet: Pet) -> None:
 		pass
 
-	def add_task(self, task: CareTask) -> None:
+	def add_task(self, task: CareTask, pet: Pet | None = None) -> None:
 		pass
 
-	def request_daily_plan(self, for_date: date) -> DailyPlan:
+	def request_daily_plan(self, for_date: date, scheduler: Scheduler | None = None) -> DailyPlan:
 		pass
 
 

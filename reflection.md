@@ -100,8 +100,11 @@ classDiagram
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+Yes. I made a few small design refinements while keeping the same core classes.
+
+I changed `DailyPlan.date` from a string to a `date` type so scheduling methods use one consistent date format. I also made `scheduled_items` a typed structure (task + time slot) instead of generic dictionaries, which makes relationships clearer and reduces future bugs.
+
+I added an explicit task-to-pet link path in the skeleton (`CareTask.pet` and optional pet input when adding tasks) so the "add a care task for a pet" workflow is represented directly in code.
 
 ---
 
