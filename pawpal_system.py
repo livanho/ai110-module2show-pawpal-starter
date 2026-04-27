@@ -176,6 +176,20 @@ class Scheduler:
 		"""Initialize a scheduler with a specified strategy."""
 		self.strategy_name = strategy_name
 
+	def sort_by_time(self, times: list[str]) -> list[str]:
+		"""Return a new list sorted by time strings in 'HH:MM' or ranges 'HH:MM-HH:MM'.
+
+		This uses a lambda `key` which converts the start time to minutes since
+		midnight so strings like '08:30' or '08:30-09:00' sort correctly.
+		"""
+
+		def to_minutes(time_str: str) -> int:
+			start = time_str.split("-", 1)[0].strip()
+			hours, mins = start.split(":")
+			return int(hours) * 60 + int(mins)
+
+		return sorted(times, key=lambda t: to_minutes(t))
+
 	def build_plan(
 		self,
 		owner: Owner,
