@@ -15,9 +15,11 @@ class CareTask:
 	pet: Pet | None = None
 
 	def mark_complete(self) -> None:
+		"""Mark this task as completed."""
 		self.is_completed = True
 
 	def is_due_today(self, for_date: date) -> bool:
+		"""Check if this task is due on the specified date."""
 		if self.is_required:
 			return True
 
@@ -32,6 +34,7 @@ class CareTask:
 		return True
 
 	def estimate_score(self, preferences: str) -> int:
+		"""Calculate a priority score for this task based on preferences and priority."""
 		priority_weights = {
 			"high": 100,
 			"medium": 60,
@@ -73,9 +76,11 @@ class Pet:
 	tasks: list[CareTask] = field(default_factory=list)
 
 	def get_tasks(self) -> list[CareTask]:
+		"""Return a copy of the pet's task list."""
 		return list(self.tasks)
 
 	def update_notes(self, notes: str) -> None:
+		"""Update the pet's notes."""
 		self.notes = notes.strip()
 
 
@@ -87,10 +92,12 @@ class DailyPlan:
 	explanations: list[str] = field(default_factory=list)
 
 	def add_item(self, task: CareTask, time_slot: str) -> None:
+		"""Add a scheduled task to the daily plan."""
 		self.scheduled_items.append(ScheduledItem(task=task, time_slot=time_slot))
 		self.total_minutes += task.duration_minutes
 
 	def summarize(self) -> str:
+		"""Generate a human-readable summary of the daily plan."""
 		if not self.scheduled_items:
 			return f"No tasks scheduled for {self.date.isoformat()}."
 
@@ -109,6 +116,7 @@ class DailyPlan:
 		return "\n".join(lines)
 
 	def get_todays_tasks(self) -> list[CareTask]:
+		"""Return the list of tasks scheduled in this plan."""
 		return [item.task for item in self.scheduled_items]
 
 
@@ -125,6 +133,7 @@ class Owner:
 		daily_time_available: int,
 		preferences: str,
 	) -> None:
+		"""Initialize an owner with name, available daily time, and preferences."""
 		self.name = name
 		self.daily_time_available = daily_time_available
 		self.preferences = preferences
@@ -133,10 +142,12 @@ class Owner:
 		self.scheduler: Scheduler | None = None
 
 	def add_pet(self, pet: Pet) -> None:
+		"""Add a pet to the owner's collection if not already present."""
 		if pet not in self.pets:
 			self.pets.append(pet)
 
 	def add_task(self, task: CareTask, pet: Pet | None = None) -> None:
+		"""Add a care task to the owner and optionally associate it with a specific pet."""
 		target_pet = pet or task.pet
 		if target_pet is not None:
 			task.pet = target_pet
@@ -149,6 +160,7 @@ class Owner:
 			self.tasks.append(task)
 
 	def request_daily_plan(self, for_date: date, scheduler: Scheduler | None = None) -> DailyPlan:
+		"""Generate a daily plan for the specified date."""
 		effective_scheduler = scheduler or self.scheduler or Scheduler(strategy_name="priority_first")
 		self.scheduler = effective_scheduler
 		return effective_scheduler.build_plan(
@@ -161,6 +173,7 @@ class Owner:
 
 class Scheduler:
 	def __init__(self, strategy_name: str) -> None:
+		"""Initialize a scheduler with a specified strategy."""
 		self.strategy_name = strategy_name
 
 	def build_plan(
@@ -170,6 +183,7 @@ class Scheduler:
 		tasks: list[CareTask],
 		for_date: date,
 	) -> DailyPlan:
+		"""Build an optimized daily plan based on tasks and time availability."""
 		plan = DailyPlan(date=for_date)
 
 		due_tasks = [task for task in tasks if task.is_due_today(for_date)]
@@ -210,6 +224,7 @@ class Scheduler:
 		return plan
 
 	def explain_choice(self, task: CareTask) -> str:
+		"""Generate an explanation for why a task was selected."""
 		required_note = "required" if task.is_required else "optional"
 		pet_name = task.pet.name if task.pet else "general care"
 		return (
