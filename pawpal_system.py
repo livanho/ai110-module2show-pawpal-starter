@@ -11,7 +11,11 @@ class CareTask:
 	priority: str
 	task_type: str
 	is_required: bool
+	is_completed: bool = False
 	pet: Pet | None = None
+
+	def mark_complete(self) -> None:
+		self.is_completed = True
 
 	def is_due_today(self, for_date: date) -> bool:
 		if self.is_required:
